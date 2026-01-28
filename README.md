@@ -14,19 +14,39 @@ An interactive CLI tool to learn GraphQL hands-on with real ecommerce scenarios.
 ## 📋 Prerequisites
 
 - Node.js (v14 or higher)
+- npm (comes with Node.js)
+- git
 - Basic understanding of APIs (REST knowledge helpful but not required)
 
 ## 🚀 Quick Start
 
+### Option 1: One-Line Install (Recommended)
+
 ```bash
-# Navigate to the trainer directory
+curl -fsSL https://raw.githubusercontent.com/rpretzer/graphql-trainer/main/install.sh | bash
+```
+
+This will clone the repo to `~/graphql-trainer`, install dependencies, and you're ready to go!
+
+### Option 2: Manual Install
+
+```bash
+# Clone the repository
+git clone https://github.com/rpretzer/graphql-trainer.git
 cd graphql-trainer
 
-# Install dependencies (already done)
+# Install dependencies
 npm install
 
 # Start the trainer
 npm start
+```
+
+### Option 3: Custom Install Directory
+
+```bash
+# Download and run install script with custom directory
+curl -fsSL https://raw.githubusercontent.com/rpretzer/graphql-trainer/main/install.sh | bash -s /path/to/your/directory
 ```
 
 ## 🎮 How It Works
