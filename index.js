@@ -131,9 +131,43 @@ async function startLesson() {
   console.log('\n' + chalk.gray('Server URL: ') + chalk.cyan(serverUrl));
   console.log(chalk.gray('You can test your queries at: ') + chalk.cyan(serverUrl) + '\n');
 
-  const query = await getMultilineInput(lesson.starter || '');
+  await promptForQuery(lesson);
+}
 
-  await validateQuery(query, lesson);
+async function promptForQuery(lesson, previousQuery = '') {
+  const query = await getMultilineInput(previousQuery || lesson.starter || '');
+
+  // Ask what to do with the query
+  const { action } = await inquirer.prompt([{
+    type: 'list',
+    name: 'action',
+    message: 'What would you like to do?',
+    choices: [
+      { name: '✅ Submit Query', value: 'submit' },
+      { name: '💡 Show Hint', value: 'hint' },
+      { name: '✏️  Edit Query', value: 'edit' },
+      { name: '🏠 Back to Menu', value: 'menu' }
+    ]
+  }]);
+
+  switch (action) {
+    case 'submit':
+      await validateQuery(query, lesson);
+      break;
+    case 'hint':
+      console.log(chalk.yellow('\n💡 Hint:\n'));
+      console.log(chalk.white(lesson.hint));
+      console.log('\n');
+      await pressEnterToContinue();
+      await promptForQuery(lesson, query);
+      break;
+    case 'edit':
+      await promptForQuery(lesson, query);
+      break;
+    case 'menu':
+      await showMenu();
+      break;
+  }
 }
 
 async function validateQuery(query, lesson) {
@@ -191,7 +225,8 @@ async function retryOrContinue(previousQuery, lesson) {
     message: 'What would you like to do?',
     choices: [
       { name: '🔄 Try Again', value: 'retry' },
-      { name: '💡 Show Solution', value: 'solution' },
+      { name: '💭 Show Hint', value: 'hint' },
+      { name: '📝 Show Solution', value: 'solution' },
       { name: '⏭️  Skip to Next Lesson', value: 'skip' },
       { name: '🏠 Back to Menu', value: 'menu' }
     ]
@@ -199,14 +234,29 @@ async function retryOrContinue(previousQuery, lesson) {
 
   switch (action) {
     case 'retry':
-      const query = await getMultilineInput(previousQuery);
-      await validateQuery(query, lesson);
+      await promptForQuery(lesson, previousQuery);
+      break;
+    case 'hint':
+      console.log(chalk.yellow('\n💡 Hint:\n'));
+      console.log(chalk.white(lesson.hint));
+      console.log('\n');
+      await pressEnterToContinue();
+      await retryOrContinue(previousQuery, lesson);
       break;
     case 'solution':
-      console.log(chalk.cyan('\n📝 Solution:\n'));
-      console.log(chalk.white(lesson.solution));
-      console.log('\n' + chalk.yellow('💡 Explanation:'));
+      console.clear();
+      console.log(chalk.bold.cyan('\n📝 SOLUTION\n'));
+      console.log(chalk.gray('─'.repeat(60)) + '\n');
+      console.log(chalk.green(lesson.solution));
+      console.log('\n' + chalk.gray('─'.repeat(60)) + '\n');
+      console.log(chalk.bold.yellow('💡 EXPLANATION:\n'));
       console.log(chalk.white(lesson.explanation));
+      if (lesson.learnMore) {
+        console.log('\n' + chalk.gray('─'.repeat(60)) + '\n');
+        console.log(chalk.bold.blue('📚 LEARN MORE:\n'));
+        console.log(chalk.cyan(lesson.learnMore));
+      }
+      console.log('\n');
       currentLesson++;
       await pressEnterToContinue();
       await showMenu();

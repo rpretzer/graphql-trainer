@@ -70,16 +70,30 @@ curl -fsSL https://raw.githubusercontent.com/rpretzer/graphql-trainer/main/insta
 - Your query stays visible with the lesson context
 - No switching to external editors!
 
-## 📚 Lessons Overview
+## 📚 Lessons Overview (15 Lessons!)
 
+**Beginner:**
 1. **Your First GraphQL Query** - Learn the basics of querying
 2. **Nested Fields** - Fetch related data in one request
 3. **Query Arguments** - Filter and search for specific data
 4. **Multiple Queries** - Combine multiple requests
+
+**Intermediate:**
 5. **Product Variants** - Handle SKUs and variants (critical for ecommerce!)
 6. **Deep Nesting** - Complex queries with customer orders
 7. **Mutations** - Create and modify data
 8. **Search & Filtering** - Essential for large catalogs
+
+**Advanced:**
+9. **Aliases** - Query same field multiple times
+10. **Fragments** - Reusable field sets
+11. **Variables** - Dynamic queries
+12. **Directives** - Conditional fields (@include, @skip)
+13. **Inline Fragments** - Handling different types
+14. **Pagination** - Managing large datasets
+15. **Best Practices** - Performance, N+1 problem, DataLoader
+
+Each lesson includes **Apollo documentation links** for deeper learning!
 
 ## 🏪 Ecommerce Schema
 
@@ -120,6 +134,21 @@ If you're preparing for a role using Hot Chocolate (.NET/C#):
 - [GraphQL Official Docs](https://graphql.org/learn/)
 - [Hot Chocolate Documentation](https://chillicream.com/docs/hotchocolate)
 - [Apollo Server Docs](https://www.apollographql.com/docs/apollo-server/)
+
+## 🔄 Updating
+
+Already have the trainer installed? Update to the latest version:
+
+```bash
+cd ~/graphql-trainer  # or your install directory
+./update.sh
+```
+
+Or manually:
+```bash
+git pull origin main
+npm install
+```
 
 ## 🐛 Troubleshooting
 

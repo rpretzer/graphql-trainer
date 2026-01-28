@@ -44,7 +44,13 @@ Think of it like ordering at a restaurant - you don't get the entire menu, just 
 • Inside { }, list the fields you want (name, price)
 • You only get what you ask for - no over-fetching!
 
-This is powerful for performance with 40k+ SKUs - you don't load unnecessary data.`
+This is powerful for performance with 40k+ SKUs - you don't load unnecessary data.`,
+
+    learnMore: `Apollo Docs - Queries and Fields:
+https://www.apollographql.com/docs/react/data/queries/
+
+GraphQL.org - Queries and Mutations:
+https://graphql.org/learn/queries/`
   },
 
   // Lesson 2: Nested Fields
@@ -107,7 +113,13 @@ This is crucial for ecommerce:
 • Order → Items → Products
 • Customer → Orders → Items
 
-All in one request. This reduces latency significantly compared to multiple REST calls.`
+All in one request. This reduces latency significantly compared to multiple REST calls.`,
+
+    learnMore: `Apollo Docs - Nested Queries:
+https://www.apollographql.com/docs/react/data/queries/#querying-nested-objects
+
+GraphQL.org - Nested Fields:
+https://graphql.org/learn/queries/#fields`
   },
 
   // Lesson 3: Query Arguments
@@ -162,7 +174,13 @@ For your 40k SKU migration:
 • searchProducts(query: "...")  - Search functionality
 • productsByCategory(categoryId: "...")  - Filter by category
 
-This is how you avoid loading all 40k SKUs at once!`
+This is how you avoid loading all 40k SKUs at once!`,
+
+    learnMore: `Apollo Docs - Query Arguments:
+https://www.apollographql.com/docs/react/data/queries/#providing-options
+
+GraphQL.org - Arguments:
+https://graphql.org/learn/queries/#arguments`
   },
 
   // Lesson 4: Multiple Queries
@@ -227,7 +245,13 @@ For ecommerce, this means:
 • Cart page: cart items + customer + shipping options
 • Checkout: order + payment methods + addresses
 
-All in ONE HTTP request instead of 5-10 REST calls.`
+All in ONE HTTP request instead of 5-10 REST calls.`,
+
+    learnMore: `Apollo Docs - Multiple Queries:
+https://www.apollographql.com/docs/react/data/queries/#executing-multiple-queries
+
+GraphQL.org - Multiple Root Fields:
+https://graphql.org/learn/queries/#multiple-fields-in-queries`
   },
 
   // Lesson 5: Variants and SKUs
@@ -313,7 +337,13 @@ Each variant has:
 • Attributes (size, color, material, etc.)
 • Separate inventory
 
-For your migration: you'll map legacy SKUs to variants. This query pattern is EXACTLY what you'll use in production!`
+For your migration: you'll map legacy SKUs to variants. This query pattern is EXACTLY what you'll use in production!`,
+
+    learnMore: `Apollo Docs - Nested Objects and Lists:
+https://www.apollographql.com/docs/react/data/queries/#nested-objects
+
+GraphQL Best Practices - Lists and Non-Null:
+https://graphql.org/learn/best-practices/#lists-and-non-null`
   },
 
   // Lesson 6: Complex Nested Query
@@ -391,7 +421,13 @@ For a PM/TPO, this matters because:
 • Developers can get exactly what they need without begging backend to add endpoints
 • Schema documents itself (try Apollo Studio/GraphiQL)
 
-This is why companies migrate to GraphQL for complex ecommerce!`
+This is why companies migrate to GraphQL for complex ecommerce!`,
+
+    learnMore: `Apollo Docs - Complex Nested Queries:
+https://www.apollographql.com/docs/react/data/queries/
+
+GraphQL.org - Query Structure:
+https://graphql.org/learn/queries/#query-and-mutation-types`
   },
 
   // Lesson 7: Mutations
@@ -471,7 +507,13 @@ For ecommerce:
 • updateInventory - Updates stock AND returns new levels
 • addToCart - Adds item AND returns updated cart
 
-This is faster than "POST then GET" in REST!`
+This is faster than "POST then GET" in REST!`,
+
+    learnMore: `Apollo Docs - Mutations:
+https://www.apollographql.com/docs/react/data/mutations/
+
+GraphQL.org - Mutations:
+https://graphql.org/learn/queries/#mutations`
   },
 
   // Lesson 8: Searching and Filtering
@@ -545,7 +587,665 @@ Hot Chocolate (your C# framework) has built-in:
 These turn into GraphQL arguments automatically! Example:
 products(where: { price: { gte: 10, lte: 100 } })
 
-You'll work with developers to define these filters based on user needs.`
+You'll work with developers to define these filters based on user needs.`,
+
+    learnMore: `Apollo Docs - Filtering and Sorting:
+https://www.apollographql.com/docs/react/data/queries/
+
+Hot Chocolate Docs - Filtering:
+https://chillicream.com/docs/hotchocolate/v13/fetching-data/filtering
+
+Hot Chocolate Docs - Sorting:
+https://chillicream.com/docs/hotchocolate/v13/fetching-data/sorting`
+  },
+
+  // Lesson 9: Aliases
+  {
+    title: 'Aliases (Querying Same Field Multiple Times)',
+    description: `What if you need to get the same field with different arguments?
+
+For example: Get laptops AND shoes in one query. You can't write:
+{
+  productsByCategory(categoryId: "1") { ... }
+  productsByCategory(categoryId: "4") { ... }  ← ERROR!
+}
+
+GraphQL needs UNIQUE field names. Solution: Use aliases!`,
+
+    challenge: 'Fetch products from category "1" (Electronics) AND category "4" (Sports).\nUse aliases "electronics" and "sports" to distinguish them.\nFor each, get: name and price.',
+
+    example: `{
+  laptop: product(id: "1") {
+    name
+    price
+  }
+  mouse: product(id: "2") {
+    name
+    price
+  }
+}`,
+
+    starter: `{
+  electronics: productsByCategory(categoryId: "1") {
+
+  }
+  sports: productsByCategory(categoryId: "4") {
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return data.electronics &&
+             data.sports &&
+             data.electronics.length > 0 &&
+             data.sports.length > 0 &&
+             data.electronics[0].name &&
+             data.sports[0].name &&
+             query.includes('electronics:') &&
+             query.includes('sports:');
+    },
+
+    hint: 'Use "aliasName: fieldName(arguments)" syntax. Ask for name and price in both.',
+
+    solution: `{
+  electronics: productsByCategory(categoryId: "1") {
+    name
+    price
+  }
+  sports: productsByCategory(categoryId: "4") {
+    name
+    price
+  }
+}`,
+
+    explanation: `Aliases let you query the same field multiple times with different arguments.
+
+Syntax: aliasName: fieldName(arguments)
+
+Real-world use cases:
+• Compare products: laptop vs desktop specs
+• Multiple searches: "shoes" vs "boots" results
+• Different filters: lowPrice vs highPrice products
+• A/B testing: experimentA vs experimentB data
+
+For 40k SKUs: Query multiple categories simultaneously for category pages!`,
+
+    learnMore: `Apollo Docs - Aliases:
+https://www.apollographql.com/docs/react/data/queries/#using-aliases
+
+GraphQL.org - Aliases:
+https://graphql.org/learn/queries/#aliases`
+  },
+
+  // Lesson 10: Fragments
+  {
+    title: 'Fragments (Reusable Field Sets)',
+    description: `Tired of typing the same fields over and over?
+
+Fragments are like "copy-paste" for field selections. Define a set of fields once, reuse everywhere!
+
+Think of them as templates or shortcuts for commonly used field combinations.`,
+
+    challenge: 'Create a fragment called "ProductBasics" with: name, price, sku.\nThen use it to fetch products from categories "1" and "2" with aliases.',
+
+    example: `fragment ProductInfo on Product {
+  name
+  price
+}
+
+{
+  products {
+    ...ProductInfo
+    category {
+      name
+    }
+  }
+}`,
+
+    starter: `fragment ProductBasics on Product {
+
+}
+
+{
+  electronics: productsByCategory(categoryId: "1") {
+
+  }
+  clothing: productsByCategory(categoryId: "2") {
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return query.includes('fragment') &&
+             query.includes('ProductBasics') &&
+             query.includes('...ProductBasics') &&
+             data.electronics &&
+             data.clothing &&
+             data.electronics[0].name &&
+             data.electronics[0].price &&
+             data.electronics[0].sku;
+    },
+
+    hint: 'Define "fragment ProductBasics on Product { name price sku }" then use "...ProductBasics" in both queries.',
+
+    solution: `fragment ProductBasics on Product {
+  name
+  price
+  sku
+}
+
+{
+  electronics: productsByCategory(categoryId: "1") {
+    ...ProductBasics
+  }
+  clothing: productsByCategory(categoryId: "2") {
+    ...ProductBasics
+  }
+}`,
+
+    explanation: `Fragments are reusable field sets. Syntax:
+
+fragment FragmentName on TypeName {
+  field1
+  field2
+}
+
+Then use with: ...FragmentName
+
+Benefits:
+• DRY (Don't Repeat Yourself) - define once, use everywhere
+• Consistency - same fields across all uses
+• Maintainability - update one place, changes everywhere
+• Performance - GraphQL optimizes fragment usage
+
+For ecommerce: Define fragments for product cards, order summaries, customer info!`,
+
+    learnMore: `Apollo Docs - Fragments:
+https://www.apollographql.com/docs/react/data/fragments/
+
+GraphQL.org - Fragments:
+https://graphql.org/learn/queries/#fragments`
+  },
+
+  // Lesson 11: Variables
+  {
+    title: 'Variables (Dynamic Queries)',
+    description: `Hard-coding values like "1" or "laptop" in queries isn't practical.
+
+In real apps, you need DYNAMIC queries based on:
+• User input (search terms)
+• URL parameters (product IDs)
+• App state (filters, sorting)
+
+Variables let you parameterize queries like function parameters!`,
+
+    challenge: 'Write a query with a variable called $productId.\nUse it to fetch a product and get: name, price, and category name.',
+
+    example: `query GetProduct($id: ID!) {
+  product(id: $id) {
+    name
+    price
+  }
+}
+
+// Variables (sent separately):
+{
+  "id": "1"
+}`,
+
+    starter: `query GetProduct($productId: ID!) {
+  product(id: $productId) {
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return query.includes('$productId') &&
+             query.includes('ID!') &&
+             data.product &&
+             data.product.name &&
+             data.product.price &&
+             data.product.category;
+    },
+
+    hint: 'Inside product query, ask for: name, price, and category { name }',
+
+    solution: `query GetProduct($productId: ID!) {
+  product(id: $productId) {
+    name
+    price
+    category {
+      name
+    }
+  }
+}
+
+// To use: pass variables separately:
+// { "productId": "1" }`,
+
+    explanation: `Variables parameterize queries. Syntax:
+
+query QueryName($varName: Type!) {
+  field(argument: $varName) {
+    ...
+  }
+}
+
+Types:
+• ID! - Required ID
+• String - Optional string
+• Int! - Required integer
+• [String!]! - Required array of required strings
+
+Why use variables?
+• Security - prevent injection attacks
+• Caching - same query, different variables = cache-friendly
+• Reusability - one query, many values
+• Type safety - GraphQL validates variable types
+
+In production: ALL user input should use variables, never string interpolation!`,
+
+    learnMore: `Apollo Docs - Variables:
+https://www.apollographql.com/docs/react/data/queries/#using-variables
+
+GraphQL.org - Variables:
+https://graphql.org/learn/queries/#variables`
+  },
+
+  // Lesson 12: Directives
+  {
+    title: 'Directives (Conditional Fields)',
+    description: `Sometimes you want fields ONLY in certain conditions.
+
+Examples:
+• Show prices only if user is logged in
+• Include detailed data only on detail pages
+• Fetch extra fields only for premium users
+
+Directives: @include and @skip let you conditionally include fields!`,
+
+    challenge: 'Fetch all products with name and price.\nUse @include directive with a $showDetails variable to conditionally include description and images.',
+
+    example: `query Products($showSKU: Boolean!) {
+  products {
+    name
+    price
+    sku @include(if: $showSKU)
+  }
+}
+
+// Variables:
+{ "showSKU": true }`,
+
+    starter: `query Products($showDetails: Boolean!) {
+  products {
+    name
+    price
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return query.includes('@include') &&
+             query.includes('$showDetails') &&
+             query.includes('Boolean!') &&
+             data.products &&
+             data.products[0].name &&
+             data.products[0].price;
+    },
+
+    hint: 'Add "description @include(if: $showDetails)" and "images @include(if: $showDetails)"',
+
+    solution: `query Products($showDetails: Boolean!) {
+  products {
+    name
+    price
+    description @include(if: $showDetails)
+    images @include(if: $showDetails)
+  }
+}
+
+// Variables:
+// { "showDetails": true }`,
+
+    explanation: `Directives modify query execution:
+
+@include(if: $variable) - Include field if true
+@skip(if: $variable) - Skip field if true
+
+Use cases:
+• Mobile vs Desktop - fewer fields on mobile
+• List vs Detail - basic info in lists, full data in detail view
+• Permissions - admin fields only for admins
+• Performance - skip expensive fields when not needed
+
+For 40k SKUs:
+• Skip variants on list pages (performance!)
+• Include full data only on product detail pages
+• Conditional inventory checks based on user location
+
+This optimizes query performance and reduces over-fetching!`,
+
+    learnMore: `Apollo Docs - Directives:
+https://www.apollographql.com/docs/react/data/directives/
+
+GraphQL.org - Directives:
+https://graphql.org/learn/queries/#directives`
+  },
+
+  // Lesson 13: Inline Fragments and Interfaces
+  {
+    title: 'Inline Fragments (Handling Different Types)',
+    description: `Sometimes a field can return DIFFERENT types.
+
+Example: A search result might return:
+• Products
+• Categories
+• Blog posts
+
+Each type has different fields. How do you query them?
+
+Inline fragments let you query type-specific fields!`,
+
+    challenge: 'This is an advanced concept. For now, fetch products and use an inline fragment to get category-specific fields.\nGet: id, name, and if it has a category, get the category\'s products count.',
+
+    example: `{
+  products {
+    id
+    name
+    ... on Product {
+      price
+      sku
+    }
+  }
+}`,
+
+    starter: `{
+  products {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+}`,
+
+    validate: (data, query) => {
+      return data.products &&
+             data.products[0].id &&
+             data.products[0].name &&
+             data.products[0].category;
+    },
+
+    hint: 'Just fetch products with: id, name, and category { id name }. The inline fragment concept is shown in the explanation.',
+
+    solution: `{
+  products {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+}`,
+
+    explanation: `Inline fragments query type-specific fields:
+
+... on TypeName {
+  typeSpecificField
+}
+
+Real-world example - Search results:
+{
+  search(query: "laptop") {
+    ... on Product {
+      price
+      sku
+    }
+    ... on Category {
+      productCount
+    }
+    ... on BlogPost {
+      author
+      publishDate
+    }
+  }
+}
+
+Why this matters:
+• Polymorphic data - different types, one query
+• Interfaces - shared fields across types
+• Unions - combine unrelated types
+
+For ecommerce: Search results, recommendation engines, content feeds!`,
+
+    learnMore: `Apollo Docs - Inline Fragments:
+https://www.apollographql.com/docs/react/data/fragments/#inline-fragments
+
+GraphQL.org - Inline Fragments:
+https://graphql.org/learn/queries/#inline-fragments
+
+GraphQL.org - Interfaces:
+https://graphql.org/learn/schema/#interfaces`
+  },
+
+  // Lesson 14: Pagination Basics
+  {
+    title: 'Pagination (Handling Large Data Sets)',
+    description: `You CANNOT load 40,000 SKUs at once! Your app will crash.
+
+Pagination loads data in chunks:
+• Page 1: Products 1-20
+• Page 2: Products 21-40
+• etc.
+
+Two common patterns:
+1. Offset-based: page=1, page=2 (like traditional pagination)
+2. Cursor-based: after="cursor" (more robust)
+
+Let's start with the basics!`,
+
+    challenge: 'Fetch only the FIRST 3 products.\nGet: id, name, and price.',
+
+    example: `{
+  products {
+    name
+    price
+  }
+}
+
+// In real apps with pagination support:
+// products(first: 10, after: "cursor") { ... }`,
+
+    starter: `{
+  products {
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return data.products &&
+             data.products.length > 0 &&
+             data.products[0].id &&
+             data.products[0].name &&
+             data.products[0].price;
+    },
+
+    hint: 'For this exercise, just fetch products with id, name, and price. Actual pagination requires server support.',
+
+    solution: `{
+  products {
+    id
+    name
+    price
+  }
+}
+
+// Note: True pagination requires server-side support.
+// Hot Chocolate example:
+// products(first: 20) { ... }
+// products(first: 20, after: "cursor") { ... }`,
+
+    explanation: `Pagination is CRITICAL for large datasets!
+
+Common patterns:
+
+1. Limit/Offset (simpler):
+products(limit: 20, offset: 40)
+
+2. Cursor-based (better):
+products(first: 20, after: "cursor")
+
+Hot Chocolate (your framework) uses cursor-based:
+• first/last: number of items
+• after/before: cursor for position
+• Automatic cursor generation
+• Built-in with [UsePaging]
+
+For 40k SKUs:
+• Load 20-50 items per page
+• Use cursors for infinite scroll
+• Show total count sparingly (expensive!)
+• Consider search/filtering before pagination
+
+Cursor pagination prevents:
+• Duplicate items
+• Missing items
+• Works with real-time data changes`,
+
+    learnMore: `Apollo Docs - Pagination:
+https://www.apollographql.com/docs/react/pagination/overview/
+
+GraphQL.org - Pagination Best Practices:
+https://graphql.org/learn/pagination/
+
+Hot Chocolate Docs - Pagination:
+https://chillicream.com/docs/hotchocolate/v13/fetching-data/pagination`
+  },
+
+  // Lesson 15: Best Practices and Next Steps
+  {
+    title: 'Best Practices and Performance',
+    description: `You've learned the fundamentals! Now let's talk about production-ready GraphQL.
+
+Key concepts for your 40k SKU migration:
+• N+1 Query Problem
+• DataLoader pattern
+• Query cost analysis
+• Schema design principles
+• Error handling
+
+Let's practice a real-world scenario!`,
+
+    challenge: 'Fetch the first 5 products with their category names and inventory status.\nThis demonstrates a query that could have N+1 issues if not optimized with DataLoader!',
+
+    example: `{
+  products {
+    name
+    price
+    category {
+      name
+    }
+    inventory {
+      inStock
+      quantity
+    }
+  }
+}`,
+
+    starter: `{
+  products {
+
+  }
+}`,
+
+    validate: (data, query) => {
+      return data.products &&
+             data.products.length > 0 &&
+             data.products[0].name &&
+             data.products[0].category &&
+             data.products[0].inventory &&
+             query.includes('category') &&
+             query.includes('inventory');
+    },
+
+    hint: 'Ask for: name, price, category { name }, inventory { inStock quantity }',
+
+    solution: `{
+  products {
+    name
+    price
+    category {
+      name
+    }
+    inventory {
+      inStock
+      quantity
+    }
+  }
+}`,
+
+    explanation: `🎓 CONGRATULATIONS! You've completed the GraphQL Trainer!
+
+KEY TAKEAWAYS:
+
+1. N+1 Problem:
+Without DataLoader, this query makes:
+• 1 query for products
+• N queries for each product's category
+• N queries for each product's inventory
+Total: 1 + 2N queries!
+
+With DataLoader: 1 + 2 queries (batched!)
+
+2. Schema Design:
+• Think in graphs, not tables
+• Nullable vs Non-null carefully
+• Pagination from day one
+• Versioning through evolution, not breaking changes
+
+3. Performance:
+• Use fragments to avoid over-fetching
+• Implement query depth limits
+• Add query cost analysis
+• Monitor slow queries
+
+4. For Your Migration:
+• Map legacy SKUs to GraphQL variants
+• Design schema with growth in mind
+• Use Hot Chocolate's built-in features ([UseFiltering], [UsePaging])
+• Test with realistic data volumes
+• Plan for eventual consistency
+
+YOU'RE READY! As a TPO/PM, you can now:
+✓ Review GraphQL PRs
+✓ Make schema design decisions
+✓ Understand performance trade-offs
+✓ Communicate with dev team effectively
+✓ Rock your interview!`,
+
+    learnMore: `Apollo Docs - Performance Best Practices:
+https://www.apollographql.com/docs/apollo-server/performance/apq/
+
+GraphQL Best Practices:
+https://graphql.org/learn/best-practices/
+
+Hot Chocolate - Performance:
+https://chillicream.com/docs/hotchocolate/v13/performance/
+
+DataLoader Pattern:
+https://github.com/graphql/dataloader
+
+GraphQL Schema Design:
+https://www.apollographql.com/docs/apollo-server/schema/schema/
+
+Continue Learning:
+• Apollo GraphQL Tutorials: https://www.apollographql.com/tutorials/
+• GraphQL Official Docs: https://graphql.org/learn/
+• Hot Chocolate Documentation: https://chillicream.com/docs/hotchocolate/
+• How to GraphQL: https://www.howtographql.com/`
   },
 ];
 
