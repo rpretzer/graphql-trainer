@@ -1,6 +1,11 @@
 # GraphQL Ecommerce Trainer 🚀
 
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D14-brightgreen)](https://nodejs.org/)
+
 An interactive CLI tool to learn GraphQL hands-on with real ecommerce scenarios. Perfect for Technical Product Owners, Project Managers, and developers preparing for GraphQL migrations.
+
+**Repository:** https://github.com/rpretzer/graphql-trainer
 
 ## 🎯 What You'll Learn
 
